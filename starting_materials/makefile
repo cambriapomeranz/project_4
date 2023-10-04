@@ -1,7 +1,4 @@
 scheduler: scheduler.c
-	gcc -o scheduler scheduler.c
-
-.PHONY: clean
-
+	gcc scheduler.c -o scheduler
 clean:
-	rm -f scheduler
+	rm scheduler
