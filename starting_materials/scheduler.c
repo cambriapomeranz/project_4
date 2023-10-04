@@ -2,11 +2,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-struct {
+struct Job {
     int id;
     int length; // Time to complete job
     struct Job *next; //Linked list
-} Job;
+};
 
 typedef struct Job Job;
 void FIFO() {
