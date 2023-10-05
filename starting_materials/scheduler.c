@@ -12,14 +12,33 @@ void FIFO(struct Job* head) {
     printf("Peforming the FIFO policy:\n");
     struct Job* current_job = head;
 
-    while (current_job->next != NULL){
-        printf("Job %d took %d seconds to execute\n", current_job->id, current_job->length);
+    while (current_job != NULL) {
+        printf("Job %d ran for: %d\n", current_job->id, current_job->length);
         current_job = current_job->next;
     }
 }
 
-void SJF() {
+void SJF(struct Job* head) {
+    printf("Peforming the SJF policy:\n");
+    struct Job* current_head = head;
 
+    int run_time = 100;
+    struct Job* new_job = NULL;
+    struct Job* prev_job = NULL;
+    // sort jobs in order of shortest run time first
+    while (current_head != NULL) {
+        while (current_head != NULL) {
+            // compare current head length 
+            if(current_head->length < run_time) {
+
+            }
+
+            prev_job = current_head;
+            current_head = current_head->next;
+        }
+
+        printf("Job %d ran for: %d\n", current_head->id, current_head->length);
+    }
 }
 
 void  RR() {
@@ -69,7 +88,6 @@ int main(int argc, char *argv[]){
             id++;
         }
     } 
-    printf("got to here\n");
     fclose(file);
 
     if (strcmp(argv[1], "FIFO") == 0){
