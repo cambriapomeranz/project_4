@@ -68,37 +68,15 @@ void SJF(struct Job* head) {
     }
 }
 
-void insertJob(struct Job** head, struct Job* newJob) {
-    if (*head == NULL) {
-        *head = newJob;
-    } else {
-        struct Job* current = *head;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = newJob;
+void  RR(struct Job* head, int time_slice) {
+    printf("Peforming the RR policy:\n");
+    struct Job* current_job = head;
+
+    while (current_job != NULL) {
+        
+        printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+        current_job = current_job->next;
     }
-}
-
-void sortSJF(struct Job** head) {
-    if (*head == NULL || (*head)->next == NULL) {
-        return; // List is empty or has only one element
-    }
-
-    struct Job* sortedList = NULL;
-    struct Job* current = *head;
-
-    while (current != NULL) {
-        struct Job* next = current->next;
-        insertJob(&sortedList, current); // Insert the current job into the sorted list
-        current = next;
-    }
-
-    *head = sortedList; // Update the original head with the sorted list
-}
-
-void  RR() {
-
 }
 
 int main(int argc, char *argv[]){
@@ -152,7 +130,7 @@ int main(int argc, char *argv[]){
     } else if (strcmp(argv[1], "SJF") == 0){
         SJF(head);
     } else if (strcmp(argv[1], "RR") == 0){
-        RR(head, tail, argv[4]);
+        RR(head, argv[4]);
     } else{
         printf("The policy you inputted is not correct\n");
     }
