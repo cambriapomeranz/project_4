@@ -20,24 +20,23 @@ void FIFO(struct Job* head) {
 
 void SJF(struct Job* head) {
     printf("Peforming the SJF policy:\n");
-    struct Job* current_head = head;
+    struct Job* current_head = head; 
 
-    int run_time = 100;
-    struct Job* new_job = NULL;
-    struct Job* prev_job = NULL;
     // sort jobs in order of shortest run time first
     while (current_head != NULL) {
-        while (current_head != NULL) {
-            // compare current head length 
-            if(current_head->length < run_time) {
-
+        struct Job* min_job = current_head; 
+        struct Job* new_job = current_head->next; 
+        
+        while (new_job != NULL) {
+            // check if new_job time is smaller the min _job time, 
+            // OR if they have the same time check which has the smaller id
+            if(new_job->length < min_job->length || (new_job->length == min_job->length && new_job->id < min_job->id)) {
+                min_job = new_job;
             }
-
-            prev_job = current_head;
-            current_head = current_head->next;
+            new_job = new_job->next;
         }
-
-        printf("Job %d ran for: %d\n", current_head->id, current_head->length);
+        printf("Job %d ran for: %d\n", min_job->id, min_job->length);
+        current_head = current_head->next;
     }
 }
 
@@ -58,7 +57,6 @@ int main(int argc, char *argv[]){
     struct Job* tail = NULL;
 
     FILE* file = fopen(argv[2], "r");
-    printf("Opened file %s\n", argv[2]);
     if (file == NULL) {
         perror("Error opening file");
         return 1; // Return an error code
