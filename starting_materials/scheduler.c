@@ -141,10 +141,10 @@ int main(int argc, char *argv[]){
     } else if (strcmp(argv[1], "SJF") == 0){
         SJF(head);
     } else if (strcmp(argv[1], "RR") == 0){
-        if(atoi(argv[4]) == 0){
+        if(atoi(argv[3]) == 0){
             printf("Time slice must be greater than 0\n");
         } else{
-            RR(head, atoi(argv[4]));
+            RR(head, atoi(argv[3]));
         }
     } else{
         printf("The policy you inputted is not correct\n");
