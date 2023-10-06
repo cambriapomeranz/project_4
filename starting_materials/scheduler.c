@@ -71,11 +71,20 @@ void SJF(struct Job* head) {
 void  RR(struct Job* head, int time_slice) {
     printf("Peforming the RR policy:\n");
     struct Job* current_job = head;
-
-    while (current_job != NULL) {
-        
-        printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+    int jobs_left = 1;
+    while(jobs_left) {
+        jobs_left = 0;
+        while (current_job != NULL) {
+            if (current_job->length > time_slice) {
+                jobs_left = 1;
+                printf("Job %d ran for: %d\n", current_job->id, time_slice);
+                current_job->length -= time_slice;
+            }
+            else if (current_job->length != 0) {
+                printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+            }
         current_job = current_job->next;
+        }
     }
 }
 
@@ -130,7 +139,7 @@ int main(int argc, char *argv[]){
     } else if (strcmp(argv[1], "SJF") == 0){
         SJF(head);
     } else if (strcmp(argv[1], "RR") == 0){
-        RR(head, argv[4]);
+        RR(head, atoi(argv[4]));
     } else{
         printf("The policy you inputted is not correct\n");
     }
