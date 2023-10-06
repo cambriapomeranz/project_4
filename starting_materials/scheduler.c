@@ -5,6 +5,7 @@
 struct Job {
     int id;
     int length; // Time to complete job
+    int sorted; // Binary int to represent if a job has been sorted or not
     struct Job *next; //Linked list
 };
 
@@ -22,22 +23,78 @@ void SJF(struct Job* head) {
     printf("Peforming the SJF policy:\n");
     struct Job* current_head = head; 
 
-    // sort jobs in order of shortest run time first
-    while (current_head != NULL) {
-        struct Job* min_job = current_head; 
+    // Gets the number of jobs
+    int num_jobs;
+    if (head != NULL){
+        num_jobs = 1;
+    } else{
+        num_jobs = 0;
+    }
+    
+    while(current_head->next != NULL){
+        num_jobs++;
+        current_head = current_head->next;
+    }
+
+     // sort jobs in order of shortest run time first
+    int jobs_sorted = 0;
+    struct Job* min_job = current_head;
+    while (jobs_sorted != num_jobs) {
+        current_head = head;
         struct Job* new_job = current_head->next; 
-        
         while (new_job != NULL) {
             // check if new_job time is smaller the min _job time, 
             // OR if they have the same time check which has the smaller id
-            if(new_job->length < min_job->length || (new_job->length == min_job->length && new_job->id < min_job->id)) {
+            if((new_job->length < min_job->length || (new_job->length == min_job->length && new_job->id < min_job->id)) && new_job->sorted != 1) {
                 min_job = new_job;
             }
             new_job = new_job->next;
         }
+        min_job->sorted = 1;
+        jobs_sorted++;
         printf("Job %d ran for: %d\n", min_job->id, min_job->length);
-        current_head = current_head->next;
+        while (current_head->next != NULL)
+        {
+            if(current_head->sorted == 0){
+                min_job = current_head;
+                break;
+            } else if(current_head->next->sorted == 0){
+                min_job = current_head->next;
+                break;
+            } else{
+                current_head = current_head->next;
+            }
+        }
     }
+}
+
+void insertJob(struct Job** head, struct Job* newJob) {
+    if (*head == NULL) {
+        *head = newJob;
+    } else {
+        struct Job* current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newJob;
+    }
+}
+
+void sortSJF(struct Job** head) {
+    if (*head == NULL || (*head)->next == NULL) {
+        return; // List is empty or has only one element
+    }
+
+    struct Job* sortedList = NULL;
+    struct Job* current = *head;
+
+    while (current != NULL) {
+        struct Job* next = current->next;
+        insertJob(&sortedList, current); // Insert the current job into the sorted list
+        current = next;
+    }
+
+    *head = sortedList; // Update the original head with the sorted list
 }
 
 void  RR() {
@@ -73,12 +130,14 @@ int main(int argc, char *argv[]){
             head = malloc(sizeof(struct Job));
             head->id = id;
             head->length = time;
+            head->sorted = 0;
             head->next = NULL;
             tail = head;
             id++;
         } else{
             new_job->id = id;
             new_job->length = time;
+            new_job->sorted = 0;
             new_job->next = NULL;
             // Logic for adding new job to the list, changing what tail points to and then changing tail
             tail->next = new_job;
