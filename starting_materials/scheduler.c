@@ -10,17 +10,19 @@ struct Job {
 };
 
 void FIFO(struct Job* head) {
-    printf("Peforming the FIFO policy:\n");
+    printf("Execution trace with FIFO:\n");
     struct Job* current_job = head;
 
     while (current_job != NULL) {
         printf("Job %d ran for: %d\n", current_job->id, current_job->length);
         current_job = current_job->next;
     }
+
+    printf("End of execution with FIFO.\n");
 }
 
 void SJF(struct Job* head) {
-    printf("Peforming the SJF policy:\n");
+    printf("Execution trace with SJF:\n");
     struct Job* current_head = head; 
 
     // Gets the number of jobs
@@ -66,10 +68,11 @@ void SJF(struct Job* head) {
             }
         }
     }
+    printf("End of execution with SJF.\n");
 }
 
-void  RR(struct Job* head, int time_slice) {
-    printf("Peforming the RR policy:\n");
+void RR(struct Job* head, int time_slice) {
+    printf("Execution trace with RR:\n");
     struct Job* current_job = head;
     int jobs_left = 1;
     while(jobs_left == 1) {
@@ -88,6 +91,7 @@ void  RR(struct Job* head, int time_slice) {
             current_job = current_job->next;
         }
     }
+    printf("End of execution with RR.\n");
 }
 
 int main(int argc, char *argv[]){
@@ -95,7 +99,7 @@ int main(int argc, char *argv[]){
         printf("You need 4 arguments for this program\n");
         return 0;
     }
-    printf("Hello, please help me schedule!\n");
+    // printf("Hello, please help me schedule!\n");
 
     int time;
     int id = 0;
