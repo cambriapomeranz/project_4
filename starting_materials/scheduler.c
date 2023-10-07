@@ -9,16 +9,72 @@ struct Job {
     struct Job *next; //Linked list
 };
 
+struct Job_Analysis {
+    int id;
+    int response_time;
+    int turnaround_time;
+    int wait_time;
+    struct Job_Analysis* next;
+};
+
 void FIFO(struct Job* head) {
     printf("Execution trace with FIFO:\n");
     struct Job* current_job = head;
+    struct Job_Analysis* analysis_head = NULL;
+    struct Job_Analysis* analysis_tail = NULL;
 
+    int time = 0;
+    int num_jobs = 0;
+    int total_response = 0;
+    int total_turn = 0;
+    int total_wait = 0;
     while (current_job != NULL) {
         printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+        // Update analysis
+        struct Job_Analysis* analysis_new = malloc(sizeof(struct Job_Analysis));
+        if (analysis_head == NULL && analysis_tail == NULL){
+            analysis_head = malloc(sizeof(struct Job_Analysis));
+            analysis_head->id = head->id;
+            analysis_head->wait_time = time;
+            analysis_head->response_time = time;
+            time += current_job->length;
+            analysis_head->turnaround_time = time;
+            analysis_head->next = NULL;
+            analysis_tail = analysis_head;
+            // Update Counters
+            num_jobs++;
+            total_response += analysis_head->response_time;
+            total_turn += analysis_head->turnaround_time;
+            total_wait += analysis_head->wait_time;
+        } else{
+            analysis_new->id = current_job->id;
+            analysis_new->wait_time = time;
+            analysis_new->response_time = time;
+            time += current_job->length;
+            analysis_new->turnaround_time = time;
+            analysis_new->next = NULL;
+            // Logic for adding new job to the list, changing what tail points to and then changing tail
+            analysis_tail->next = analysis_new;
+            analysis_tail = analysis_new;
+            // Update Counters
+            num_jobs++;
+            total_response += analysis_new->response_time;
+            total_turn += analysis_new->turnaround_time;
+            total_wait += analysis_new->wait_time;
+        }
         current_job = current_job->next;
     }
 
     printf("End of execution with FIFO.\n");
+    // Analysis
+    printf("Begin analyzing FIFO:\n");
+    struct Job_Analysis* current_analysis = analysis_head;
+    while (current_analysis->next != NULL){
+        printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", current_analysis->id, current_analysis->response_time, current_analysis->turnaround_time, current_analysis->wait_time);
+        current_analysis = current_analysis->next;
+    }
+    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("End analyzing FIFO.\n");
 }
 
 void SJF(struct Job* head) {
