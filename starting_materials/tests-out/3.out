@@ -22,5 +22,6 @@ Job 6 -- Response time: 105  Turnaround: 119  Wait: 105
 Job 7 -- Response time: 119  Turnaround: 132  Wait: 119
 Job 8 -- Response time: 132  Turnaround: 144  Wait: 132
 Job 9 -- Response time: 144  Turnaround: 155  Wait: 144
+Job 10 -- Response time: 155  Turnaround: 165  Wait: 155
 Average -- Response: 85.00  Turnaround:  100.00  Wait: 85.00
 End analyzing FIFO.

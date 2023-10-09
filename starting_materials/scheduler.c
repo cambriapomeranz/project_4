@@ -18,7 +18,7 @@ struct Job_Analysis {
 };
 
 void FIFO(struct Job* head) {
-    printf("Execution trace with FIFO:\n");
+    //printf("Execution trace with FIFO:\n");
     struct Job* current_job = head;
     struct Job_Analysis* analysis_head = NULL;
     struct Job_Analysis* analysis_tail = NULL;
@@ -29,7 +29,7 @@ void FIFO(struct Job* head) {
     int total_turn = 0;
     int total_wait = 0;
     while (current_job != NULL) {
-        printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+        //printf("Job %d ran for: %d\n", current_job->id, current_job->length);
         // Update analysis
         struct Job_Analysis* analysis_new = malloc(sizeof(struct Job_Analysis));
         if (analysis_head == NULL && analysis_tail == NULL){
@@ -65,11 +65,11 @@ void FIFO(struct Job* head) {
         current_job = current_job->next;
     }
 
-    printf("End of execution with FIFO.\n");
+    //printf("End of execution with FIFO.\n");
     // Analysis
     printf("Begin analyzing FIFO:\n");
     struct Job_Analysis* current_analysis = analysis_head;
-    while (current_analysis->next != NULL){
+    while (current_analysis != NULL){
         printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", current_analysis->id, current_analysis->response_time, current_analysis->turnaround_time, current_analysis->wait_time);
         current_analysis = current_analysis->next;
     }
@@ -80,6 +80,13 @@ void FIFO(struct Job* head) {
 void SJF(struct Job* head) {
     printf("Execution trace with SJF:\n");
     struct Job* current_head = head; 
+    struct Job_Analysis* analysis_head = NULL;
+    struct Job_Analysis* analysis_tail = NULL;
+
+    int time = 0;
+    int total_response = 0;
+    int total_turn = 0;
+    int total_wait = 0;
 
     // Gets the number of jobs
     int num_jobs;
@@ -94,14 +101,14 @@ void SJF(struct Job* head) {
         current_head = current_head->next;
     }
 
-     // sort jobs in order of shortest run time first
+    // sort jobs in order of shortest run time first
     int jobs_sorted = 0;
     struct Job* min_job = current_head;
     while (jobs_sorted != num_jobs) {
         current_head = head;
         struct Job* new_job = current_head->next; 
         while (new_job != NULL) {
-            // check if new_job time is smaller the min _job time, 
+            // check if new_job time is smaller the min_job time, 
             // OR if they have the same time check which has the smaller id
             if((new_job->length < min_job->length || (new_job->length == min_job->length && new_job->id < min_job->id)) && new_job->sorted != 1) {
                 min_job = new_job;
@@ -110,7 +117,38 @@ void SJF(struct Job* head) {
         }
         min_job->sorted = 1;
         jobs_sorted++;
+
         printf("Job %d ran for: %d\n", min_job->id, min_job->length);
+        // Update analysis
+        struct Job_Analysis* analysis_new = malloc(sizeof(struct Job_Analysis));
+        if (analysis_head == NULL && analysis_tail == NULL){
+            analysis_head = malloc(sizeof(struct Job_Analysis));
+            analysis_head->id = min_job->id;
+            analysis_head->wait_time = time;
+            analysis_head->response_time = time;
+            time += min_job->length;
+            analysis_head->turnaround_time = time;
+            analysis_head->next = NULL;
+            analysis_tail = analysis_head;
+            // Update Counters
+            total_response += analysis_head->response_time;
+            total_turn += analysis_head->turnaround_time;
+            total_wait += analysis_head->wait_time;
+        } else{
+            analysis_new->id = min_job->id;
+            analysis_new->wait_time = time;
+            analysis_new->response_time = time;
+            time += min_job->length;
+            analysis_new->turnaround_time = time;
+            analysis_new->next = NULL;
+            // Logic for adding new job to the list, changing what tail points to and then changing tail
+            analysis_tail->next = analysis_new;
+            analysis_tail = analysis_new;
+            // Update Counters
+            total_response += analysis_new->response_time;
+            total_turn += analysis_new->turnaround_time;
+            total_wait += analysis_new->wait_time;
+        }
         while (current_head->next != NULL)
         {
             if(current_head->sorted == 0){
@@ -125,6 +163,16 @@ void SJF(struct Job* head) {
         }
     }
     printf("End of execution with SJF.\n");
+
+    // Analysis
+    printf("Begin analyzing SJF:\n");
+    struct Job_Analysis* current_analysis = analysis_head;
+    while (current_analysis != NULL){
+        printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", current_analysis->id, current_analysis->response_time, current_analysis->turnaround_time, current_analysis->wait_time);
+        current_analysis = current_analysis->next;
+    }
+    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("End analyzing SJF.\n");
 }
 
 void RR(struct Job* head, int time_slice) {
@@ -155,7 +203,6 @@ int main(int argc, char *argv[]){
         printf("You need 4 arguments for this program\n");
         return 0;
     }
-    // printf("Hello, please help me schedule!\n");
 
     int time;
     int id = 0;
