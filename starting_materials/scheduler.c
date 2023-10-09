@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 struct Job {
     int id;
@@ -210,19 +211,6 @@ void RR(struct Job* head, int time_slice) {
         r_time[i] = 0;
         t_time[i] = 0;
         w_time[i] = 0;
-        struct Job_Analysis* analysis_new = malloc(sizeof(struct Job_Analysis));
-        if (analysis_head == NULL && analysis_tail == NULL){
-            analysis_head = malloc(sizeof(struct Job_Analysis));
-            analysis_head->id = i;
-            analysis_head->next = NULL;
-            analysis_tail = analysis_head;
-        } else{
-            analysis_new->id = i;
-            analysis_new->next = NULL;
-            // Logic for adding new job to the list, changing what tail points to and then changing tail
-            analysis_tail->next = analysis_new;
-            analysis_tail = analysis_new;
-        }
     }
 
     // 1 means there are still jobs to be completed
@@ -256,9 +244,17 @@ void RR(struct Job* head, int time_slice) {
                     total_response += time;
                 }
                 // jobs is completed in this loop, so edit turnaround time and wait time
-                w_time[current_job->id] = time - ((w_time[current_job->id]/time_slice) * time_slice);
-                total_wait += w_time[current_job->id];
+                
                 time += current_job->length;
+                if(w_time[current_job->id] == 0) {
+                    w_time[current_job->id] = current_job->length;
+                }
+                if(current_job->length == time_slice) {
+                    w_time[current_job->id] = time - ((w_time[current_job->id]/time_slice) * time_slice);
+                } else {
+                    w_time[current_job->id] = time - ((w_time[current_job->id]/time_slice) * time_slice) - current_job->length;
+                }
+                total_wait += w_time[current_job->id];
                 t_time[current_job->id] = time;
                 total_turn += time;
                 current_job->length = 0;
