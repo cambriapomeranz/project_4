@@ -19,7 +19,7 @@ struct Job_Analysis {
 };
 
 void FIFO(struct Job* head) {
-    //printf("Execution trace with FIFO:\n");
+    printf("Execution trace with FIFO:\n");
     struct Job* current_job = head;
     struct Job_Analysis* analysis_head = NULL;
     struct Job_Analysis* analysis_tail = NULL;
@@ -66,7 +66,7 @@ void FIFO(struct Job* head) {
         current_job = current_job->next;
     }
 
-    //printf("End of execution with FIFO.\n");
+    printf("End of execution with FIFO.\n");
     // Analysis
     printf("Begin analyzing FIFO:\n");
     struct Job_Analysis* current_analysis = analysis_head;
@@ -74,7 +74,7 @@ void FIFO(struct Job* head) {
         printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", current_analysis->id, current_analysis->response_time, current_analysis->turnaround_time, current_analysis->wait_time);
         current_analysis = current_analysis->next;
     }
-    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("Average -- Response: %.2f  Turnaround: %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
     printf("End analyzing FIFO.\n");
 }
 
@@ -172,7 +172,7 @@ void SJF(struct Job* head) {
         printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", current_analysis->id, current_analysis->response_time, current_analysis->turnaround_time, current_analysis->wait_time);
         current_analysis = current_analysis->next;
     }
-    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("Average -- Response: %.2f  Turnaround: %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
     printf("End analyzing SJF.\n");
 }
 
@@ -270,7 +270,7 @@ void RR(struct Job* head, int time_slice) {
     for(int i = 0; i < num_jobs; i++) {
         printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", i, r_time[i], t_time[i], w_time[i]);
     }
-    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("Average -- Response: %.2f  Turnaround: %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
     printf("End analyzing RR.\n");
 }
 
