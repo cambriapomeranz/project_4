@@ -178,24 +178,104 @@ void SJF(struct Job* head) {
 void RR(struct Job* head, int time_slice) {
     printf("Execution trace with RR:\n");
     struct Job* current_job = head;
+    struct Job_Analysis* analysis_head = NULL;
+    struct Job_Analysis* analysis_tail = NULL;
+
+    int time = 0;
+    int total_response = 0;
+    int total_turn = 0;
+    int total_wait = 0;
+
+    // get total number of jobs
+    int num_jobs;
+    if (head != NULL){
+        num_jobs = 1;
+    } else{
+        num_jobs = 0;
+    }
+    
+    while(current_job->next != NULL){
+        num_jobs++;
+        current_job = current_job->next;
+    }
+    current_job = head;
+
+    // create arrays for each jobs' analysis metric
+    int r_time[num_jobs];
+    int t_time[num_jobs];
+    int w_time[num_jobs];
+
+    for(int i = 0; i < num_jobs; i++) {
+        // initialize each array value to 0
+        r_time[i] = 0;
+        t_time[i] = 0;
+        w_time[i] = 0;
+        struct Job_Analysis* analysis_new = malloc(sizeof(struct Job_Analysis));
+        if (analysis_head == NULL && analysis_tail == NULL){
+            analysis_head = malloc(sizeof(struct Job_Analysis));
+            analysis_head->id = i;
+            analysis_head->next = NULL;
+            analysis_tail = analysis_head;
+        } else{
+            analysis_new->id = i;
+            analysis_new->next = NULL;
+            // Logic for adding new job to the list, changing what tail points to and then changing tail
+            analysis_tail->next = analysis_new;
+            analysis_tail = analysis_new;
+        }
+    }
+
+    // 1 means there are still jobs to be completed
     int jobs_left = 1;
     while(jobs_left == 1) {
         jobs_left = 0;
         current_job = head;
         while (current_job != NULL) {
+            // when the entire job won't be able to run
             if (current_job->length > time_slice) {
                 jobs_left = 1;
                 printf("Job %d ran for: %d\n", current_job->id, time_slice);
+    
+                // edit job's response time if it already hasn't been set
+                if(r_time[current_job->id] == 0) {
+                    r_time[current_job->id] = time;
+                    total_response += time;
+                    // wait time array is going to keep track of original job length for later calculations
+                    w_time[current_job->id] = current_job->length;
+                }
+
                 current_job->length -= time_slice;
+                time += time_slice;
             }
+            // when the rest of the job will be able to run
             else if (current_job->length > 0) {
                 printf("Job %d ran for: %d\n", current_job->id, current_job->length);
+                // edit job's response time if it already hasn't been set
+                if(r_time[current_job->id] == 0) {
+                    r_time[current_job->id] = time;
+                    total_response += time;
+                }
+                // jobs is completed in this loop, so edit turnaround time and wait time
+                w_time[current_job->id] = time - ((w_time[current_job->id]/time_slice) * time_slice);
+                total_wait += w_time[current_job->id];
+                time += current_job->length;
+                t_time[current_job->id] = time;
+                total_turn += time;
                 current_job->length = 0;
             }
             current_job = current_job->next;
         }
     }
     printf("End of execution with RR.\n");
+
+    // Analysis
+    printf("Begin analyzing RR:\n");
+    struct Job_Analysis* current_analysis = analysis_head;
+    for(int i = 0; i < num_jobs; i++) {
+        printf("Job %d -- Response time: %d  Turnaround: %d  Wait: %d\n", i, r_time[i], t_time[i], w_time[i]);
+    }
+    printf("Average -- Response: %.2f  Turnaround:  %.2f  Wait: %.2f\n", total_response/(num_jobs * 1.00), total_turn/(num_jobs * 1.00), total_wait/(num_jobs * 1.00));
+    printf("End analyzing RR.\n");
 }
 
 int main(int argc, char *argv[]){
