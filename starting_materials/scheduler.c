@@ -239,7 +239,7 @@ void RR(struct Job* head, int time_slice) {
             else if (current_job->length > 0) {
                 printf("Job %d ran for: %d\n", current_job->id, current_job->length);
                 // edit job's response time if it already hasn't been set
-                if(r_time[current_job->id] == 0) {
+                if(r_time[current_job->id] == 0 && current_job->id != 0) {
                     r_time[current_job->id] = time;
                     total_response += time;
                 }
